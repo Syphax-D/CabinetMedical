@@ -7,6 +7,7 @@
     'category': 'Healthcare',
     'depends': ['base'],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'views/medical_menu.xml',
         'views/specialty_views.xml',

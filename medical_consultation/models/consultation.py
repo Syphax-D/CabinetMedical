@@ -21,6 +21,15 @@ class MedicalConsultation(models.Model):
     notes = fields.Text(string='Notes')
     
     prescription_line_ids = fields.One2many('medical.prescription.line', 'consultation_id', string='Prescriptions')
+    treatment_summary = fields.Text(string='Traitement', compute='_compute_treatment_summary')
+
+    @api.depends('prescription_line_ids.medication_id', 'prescription_line_ids.dosage')
+    def _compute_treatment_summary(self):
+        for rec in self:
+            if rec.prescription_line_ids:
+                rec.treatment_summary = ', '.join([f"{p.medication_id.name} ({p.dosage})" for p in rec.prescription_line_ids if p.medication_id])
+            else:
+                rec.treatment_summary = ''
 
     @api.model_create_multi
     def create(self, vals_list):

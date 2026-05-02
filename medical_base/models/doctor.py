@@ -12,6 +12,7 @@ class MedicalDoctor(models.Model):
     phone = fields.Char(string='Phone')
     specialty_id = fields.Many2one('medical.specialty', string='Specialty')
     bio = fields.Text(string='Biography')
+    user_id = fields.Many2one('res.users', string='Utilisateur Odoo', help='Lié à l\'utilisateur du système')
     active = fields.Boolean(string='Active', default=True)
 
     @api.depends('first_name', 'last_name')

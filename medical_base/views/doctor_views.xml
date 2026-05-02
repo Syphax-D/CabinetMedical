@@ -29,8 +29,9 @@
                             <field name="specialty_id"/>
                         </group>
                         <group>
-                            <field name="email"/>
                             <field name="phone"/>
+                            <field name="email"/>
+                            <field name="user_id"/>
                             <field name="active"/>
                         </group>
                     </group>
