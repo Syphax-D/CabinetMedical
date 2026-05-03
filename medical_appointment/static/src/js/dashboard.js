@@ -1,0 +1,78 @@
+/** @odoo-module **/
+
+import { registry } from "@web/core/registry";
+import { Component, useState, onWillStart } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+import { session } from "@web/session";
+import { user } from "@web/core/user";
+
+export class MedicalDashboard extends Component {
+    setup() {
+        this.orm = useService("orm");
+        this.action = useService("action");
+        this.session = session;
+        
+        this.state = useState({
+            appointments: [],
+            is_doctor: false,
+            has_access: true,
+        });
+
+        onWillStart(async () => {
+            const isDoctor = await user.hasGroup("medical_base.group_medical_doctor");
+            const isSecretary = await user.hasGroup("medical_base.group_medical_secretary");
+            const isAdmin = await user.hasGroup("base.group_erp_manager");
+            
+            this.state.has_access = isDoctor || isSecretary || isAdmin;
+            
+            if (!this.state.has_access) {
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // Format for Odoo ORM (UTC)
+            // Note: Simplification for prototype: using local date strings directly formatted
+            // Odoo usually expects UTC string for datetime fields.
+            const formatToUTCString = (date) => {
+                return date.toISOString().split('.')[0].replace('T', ' ');
+            };
+            
+            const todayStr = formatToUTCString(today);
+            const tomorrowStr = formatToUTCString(tomorrow);
+
+            // Try to find a doctor matching the user's name
+            const doctors = await this.orm.searchRead(
+                "medical.doctor", 
+                [["name", "ilike", session.name]], 
+                ["id"]
+            );
+            
+            let domain = [
+                ["appointment_date", ">=", todayStr],
+                ["appointment_date", "<", tomorrowStr],
+                ["state", "!=", "cancelled"]
+            ];
+            
+            if (doctors.length > 0) {
+                domain.push(["doctor_id", "=", doctors[0].id]);
+                this.state.is_doctor = true;
+            } else {
+                this.state.is_doctor = false;
+            }
+
+            this.state.appointments = await this.orm.searchRead(
+                "medical.appointment",
+                domain,
+                ["name", "patient_id", "doctor_id", "appointment_date", "state"]
+            );
+        });
+    }
+}
+MedicalDashboard.template = "medical_appointment.Dashboard";
+
+registry.category("actions").add("medical_dashboard_action", MedicalDashboard);

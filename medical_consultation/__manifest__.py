@@ -7,11 +7,13 @@
     'category': 'Healthcare',
     'depends': ['base', 'medical_appointment'],
     'data': [
+        'security/security_rules.xml',
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'views/disease_views.xml',
         'views/medication_views.xml',
         'views/consultation_views.xml',
+        'views/patient_views.xml',
         'views/medical_consultation_menu.xml',
     ],
     'installable': True,

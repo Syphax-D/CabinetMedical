@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="medical_appointment.Dashboard" owl="1">
+        <div class="o_medical_dashboard container mt-4">
+            <t t-if="!state.has_access">
+                <div class="row">
+                    <div class="col-12 text-center mt-5">
+                        <div class="alert alert-danger shadow-sm d-inline-block p-4">
+                            <i class="fa fa-lock fa-3x mb-3 text-danger"></i>
+                            <h2 class="text-danger">Accès Refusé</h2>
+                            <p class="lead mb-0">Vous n'êtes pas autorisé à accéder au module Médical.</p>
+                            <p><strong>Contactez votre administrateur pour demander l'accès.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="row">
+                <div class="col-12">
+                    <h1 class="text-primary mb-3">
+                        Bienvenue <t t-esc="session.name"/>
+                    </h1>
+                    <h3 class="mt-4 mb-3 text-dark fw-bold">
+                        <t t-if="state.is_doctor">
+                            Voici votre planning pour aujourd'hui :
+                        </t>
+                        <t t-else="">
+                            Voici tous les rendez-vous d'aujourd'hui :
+                        </t>
+                    </h3>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <t t-if="state.appointments.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover bg-white rounded shadow-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Patient</th>
+                                        <th t-if="!state.is_doctor">Médecin</th>
+                                        <th>Heure</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.appointments" t-as="app" t-key="app.id">
+                                        <td><strong t-esc="app.name"/></td>
+                                        <td><t t-esc="app.patient_id[1]"/></td>
+                                        <td t-if="!state.is_doctor"><t t-esc="app.doctor_id[1]"/></td>
+                                        <td><t t-esc="app.appointment_date"/></td>
+                                        <td>
+                                            <span t-attf-class="badge #{app.state === 'draft' ? 'bg-secondary' : app.state === 'confirmed' ? 'bg-info' : 'bg-success'}">
+                                                <t t-esc="app.state"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info shadow-sm">
+                            <i class="fa fa-info-circle me-2"></i> Vous n'avez aucun rendez-vous de prévu pour aujourd'hui.
+                        </div>
+                    </t>
+                </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

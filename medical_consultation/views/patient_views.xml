@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_medical_patient_form_inherit_consultation" model="ir.ui.view">
+        <field name="name">medical.patient.form.inherit.consultation</field>
+        <field name="model">medical.patient</field>
+        <field name="inherit_id" ref="medical_base.view_medical_patient_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Suivi Médical">
+                    <field name="consultation_ids" readonly="1">
+                        <list string="Historique des Consultations" default_order="consultation_date desc">
+                            <field name="consultation_date" string="Date de passage"/>
+                            <field name="doctor_id" string="Médecin"/>
+                            <field name="disease_id" string="Maladie / Diagnostic"/>
+                            <field name="treatment_summary" string="Traitement"/>
+                            <field name="notes" string="Notes"/>
+                            <field name="state" string="Statut"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -7,11 +7,19 @@
     'category': 'Healthcare',
     'depends': ['base', 'medical_base'],
     'data': [
+        'security/security_rules.xml',
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'views/dashboard_action.xml',
         'views/appointment_views.xml',
         'views/medical_appointment_menu.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'medical_appointment/static/src/js/dashboard.js',
+            'medical_appointment/static/src/xml/dashboard.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
