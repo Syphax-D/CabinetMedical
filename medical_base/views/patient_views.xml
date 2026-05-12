@@ -21,6 +21,7 @@
         <field name="model">medical.patient</field>
         <field name="arch" type="xml">
             <form string="Patient">
+                <div class="oe_button_box" name="button_box"/>
                 <sheet>
                     <group>
                         <group>
