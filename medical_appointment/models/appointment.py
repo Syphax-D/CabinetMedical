@@ -23,8 +23,29 @@ class MedicalAppointment(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('medical.appointment') or 'New'
+                # Get the patient's initials
+                patient_id = vals.get('patient_id')
+                initials = 'XX'
+                if patient_id:
+                    patient = self.env['medical.patient'].browse(patient_id)
+                    if patient:
+                        first_i = patient.first_name.strip()[0].upper() if patient.first_name and patient.first_name.strip() else 'X'
+                        last_i = patient.last_name.strip()[0].upper() if patient.last_name and patient.last_name.strip() else 'X'
+                        initials = f"{first_i}{last_i}"
+                
+                # Get the next sequence value
+                seq = self.env['ir.sequence'].next_by_code('medical.appointment') or '00000'
+                
+                # Safely extract the numeric sequence part (in case the sequence definition has a prefix like 'APT/')
+                seq_num = seq
+                if '/' in seq:
+                    seq_num = seq.split('/')[-1]
+                elif '-' in seq:
+                    seq_num = seq.split('-')[-1]
+                
+                vals['name'] = f"APT-{initials}/{seq_num}"
         return super(MedicalAppointment, self).create(vals_list)
+
 
     @api.constrains('appointment_date')
     def _check_past_date(self):
