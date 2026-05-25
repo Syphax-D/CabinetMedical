@@ -63,14 +63,20 @@
                                 <list>
                                     <field name="title"/>
                                     <field name="content" line_breaks="true"/>
+                                    <button name="%(medical_consultation.action_report_certificate)d" string="Imprimer" type="action" icon="fa-print" class="btn-secondary"/>
                                 </list>
                                 <form>
-                                    <group>
-                                        <field name="title" placeholder="Ex: Certificat médical d'aptitude, Justificatif d'absence..."/>
-                                    </group>
-                                    <group>
-                                        <field name="content" widget="text" placeholder="Rédigez le contenu du document ici..." class="oe_inline" style="width: 100%; min-height: 150px;"/>
-                                    </group>
+                                    <header>
+                                        <button name="%(medical_consultation.action_report_certificate)d" string="Imprimer" type="action" class="btn-primary" icon="fa-print"/>
+                                    </header>
+                                    <sheet>
+                                        <group>
+                                            <field name="title" placeholder="Ex: Certificat médical d'aptitude, Justificatif d'absence..."/>
+                                        </group>
+                                        <group>
+                                            <field name="content" widget="text" placeholder="Rédigez le contenu du document ici..." class="oe_inline" style="width: 100%; min-height: 150px;"/>
+                                        </group>
+                                    </sheet>
                                 </form>
                             </field>
                         </page>
