@@ -12,6 +12,7 @@ class MedicalAppointment(models.Model):
     patient_id = fields.Many2one('medical.patient', string='Patient', required=True)
     doctor_id = fields.Many2one('medical.doctor', string='Doctor', required=True)
     appointment_date = fields.Datetime(string='Date & Time', required=True)
+    duration = fields.Float(string='Duration (hours)', default=0.5)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
