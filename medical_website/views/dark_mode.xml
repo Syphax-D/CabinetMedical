@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="dark_mode_assets" inherit_id="website.layout" name="Dark Mode Assets">
+        <xpath expr="//head" position="inside">
+            <script type="text/javascript">
+                (function() {
+                    try {
+                        if (localStorage.getItem('medicss_dark') === 'true') {
+                            document.documentElement.classList.add('dark-mode');
+                        }
+                    } catch(e) {}
+                })();
+            </script>
+        </xpath>
+    </template>
+</odoo>

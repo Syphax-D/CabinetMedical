@@ -61,11 +61,7 @@ class MedicalAppointment(models.Model):
         for record in self:
             if not record.appointment_date:
                 continue
-            
-            user_tz = pytz.timezone(self.env.user.tz or 'UTC')
-            local_time = pytz.utc.localize(record.appointment_date).astimezone(user_tz)
-            hour = local_time.hour
-            
+            hour = record.appointment_date.hour
             if not (8 <= hour < 17):
                 raise ValidationError("Les rendez-vous doivent avoir lieu entre 08:00 et 17:00.")
 

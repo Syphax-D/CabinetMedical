@@ -10,6 +10,7 @@
         'reports/appointment_report.xml',
         'views/templates.xml',
         'views/website_menu.xml',
+        'views/dark_mode.xml',
     ],
     'assets': {
         'web.assets_frontend': [

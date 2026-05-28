@@ -7,7 +7,10 @@ class MedicalWebsite(http.Controller):
 
     @http.route('/medical', type='http', auth='public', website=True)
     def index(self, **kwargs):
-        return request.render('medical_website.index', {})
+        doctor = request.env['medical.doctor'].sudo().search([], limit=1)
+        return request.render('medical_website.index', {
+            'featured_doctor': doctor,
+        })
 
     @http.route('/medical/medecins', type='http', auth='public', website=True)
     def medecins(self, **kwargs):
@@ -41,16 +44,23 @@ class MedicalWebsite(http.Controller):
             if not doctor_id or not appointment_date or not first_name or not last_name:
                 raise ValueError("Tous les champs obligatoires doivent être remplis.")
 
-            date_obj = datetime.strptime(appointment_date, '%Y-%m-%dT%H:%M')
+            # Heure LOCALE choisie par l'utilisateur
+            date_local = datetime.strptime(appointment_date, '%Y-%m-%dT%H:%M')
 
-            if date_obj < datetime.now():
-                raise ValueError("La date choisie est déjà passée.")
-
-            if not (8 <= date_obj.hour < 17):
+            # Validations sur l'heure LOCALE (avant conversion UTC)
+            if not (8 <= date_local.hour < 17):
                 raise ValueError("Les RDV sont disponibles uniquement entre 08h00 et 17h00.")
 
-            if date_obj.weekday() >= 5:
+            if date_local.weekday() >= 5:
                 raise ValueError("Les RDV ne sont pas disponibles le weekend.")
+
+            # Conversion en UTC pour stockage
+            import pytz
+            user_tz = pytz.timezone('Europe/Paris')
+            date_utc = user_tz.localize(date_local).astimezone(pytz.utc).replace(tzinfo=None)
+
+            if date_utc < datetime.utcnow():
+                raise ValueError("La date choisie est déjà passée.")
 
             patient = request.env['medical.patient'].sudo().search([
                 ('first_name', 'ilike', first_name),
@@ -65,24 +75,35 @@ class MedicalWebsite(http.Controller):
                     'email': email,
                 })
 
+            # Création du RDV avec flush pour déclencher les contraintes immédiatement
             rdv = request.env['medical.appointment'].sudo().create({
                 'doctor_id': doctor_id,
                 'patient_id': patient.id,
-                'appointment_date': date_obj,
+                'appointment_date': date_utc,
                 'state': 'draft',
             })
+            rdv.flush_recordset()  # Force la vérification des contraintes maintenant
 
             return request.redirect(f'/medical/rdv/confirmation/{rdv.id}')
 
         except Exception as e:
+            # Annuler toute création partielle en cas d'erreur
+            request.env.cr.rollback()
+
             selected_doctor = None
             doctor_id = kwargs.get('doctor_id')
             if doctor_id:
                 selected_doctor = request.env['medical.doctor'].sudo().browse(int(doctor_id))
+
+            # Nettoyer le message d'erreur
+            error_msg = str(e)
+            if 'ValidationError' in error_msg:
+                error_msg = error_msg.split('\n')[-1]
+
             return request.render('medical_website.rdv', {
                 'doctors': doctors,
                 'selected_doctor': selected_doctor,
-                'error': str(e),
+                'error': error_msg,
                 'form_data': {
                     'first_name': kwargs.get('first_name', ''),
                     'last_name': kwargs.get('last_name', ''),
@@ -192,20 +213,39 @@ class MedicalWebsite(http.Controller):
             if not rdv:
                 raise ValueError("Aucun rendez-vous trouvé avec cette référence.")
 
-            rdvs = request.env['medical.appointment'].sudo().search([
-                ('patient_id', '=', patient.id),
-            ], order='appointment_date desc')
-
-            return request.render('medical_website.mes_rdv', {
-                'rdvs': rdvs,
-                'patient': patient,
-                'searched': True,
-                'error': None,
-            })
+            return request.redirect(f'/medical/espace-patient/{patient.id}')
 
         except Exception as e:
             return request.render('medical_website.mes_rdv', {
-                'rdvs': None,
                 'searched': True,
                 'error': str(e),
             })
+
+    @http.route('/medical/espace-patient/<int:patient_id>', type='http', auth='public', website=True)
+    def espace_patient(self, patient_id, **kwargs):
+        patient = request.env['medical.patient'].sudo().browse(patient_id)
+        if not patient.exists():
+            return request.redirect('/medical/mes-rdv')
+
+        rdvs = request.env['medical.appointment'].sudo().search([
+            ('patient_id', '=', patient.id),
+        ], order='appointment_date desc')
+
+        consultations = request.env['medical.consultation'].sudo().search([
+            ('patient_id', '=', patient.id),
+            ('state', '=', 'done'),
+        ], order='consultation_date desc')
+
+        # Statistiques
+        total_rdv = len(rdvs)
+        rdv_done = len(rdvs.filtered(lambda r: r.state == 'done'))
+        rdv_upcoming = len(rdvs.filtered(lambda r: r.state in ['draft', 'confirmed']))
+
+        return request.render('medical_website.espace_patient', {
+            'patient': patient,
+            'rdvs': rdvs,
+            'consultations': consultations,
+            'total_rdv': total_rdv,
+            'rdv_done': rdv_done,
+            'rdv_upcoming': rdv_upcoming,
+        })
