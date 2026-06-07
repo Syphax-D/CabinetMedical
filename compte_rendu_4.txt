@@ -1,0 +1,148 @@
+================================================================================
+          COMPTE RENDU DES MODIFICATIONS - CABINET MEDICAL (ODOO)
+================================================================================
+
+Date : 07/06/2026
+Projet : Cabinet Médical (Odoo - modules custom)
+Compte Rendu N° : 4 (Modifications des consultations, attestations et ordonnances)
+
+================================================================================
+1. ATTESTATIONS : GESTION DYNAMIQUE DE LA VILLE ET DE LA DATE
+================================================================================
+
+POURQUOI ?
+----------
+Auparavant, la ville était configurée de manière globale pour l'ensemble de la
+consultation. Cela ne permettait pas de personnaliser la ville ou la date pour
+chaque certificat/attestation de manière indépendante. De plus, la date du jour
+était figée à la date d'impression de l'attestation.
+
+CE QUI A ETE FAIT
+-----------------
+- Suppression du champ "Ville" global au niveau de la consultation et retrait
+  de l'onglet "Ville" dans la vue formulaire de la consultation.
+- Transfert de la ville (`city`) et ajout d'un champ date (`document_date`) au
+  niveau de chaque document/attestation individuel.
+- Affichage de ces deux champs dans la vue en liste et le formulaire de saisie des
+  attestations au sein de la consultation.
+- Mise à jour du template du rapport PDF de certificat (`certificate_report.xml`)
+  pour utiliser dynamiquement la ville et la date spécifiques du document.
+
+FICHIERS MODIFIES
+-----------------
+- medical_consultation/models/consultation.py
+- medical_consultation/views/consultation_views.xml
+- medical_consultation/report/certificate_report.xml
+
+
+================================================================================
+2. CONFIGURATION ET CREATION DE MODELES D'ATTESTATIONS
+================================================================================
+
+POURQUOI ?
+----------
+Le médecin devait ressaisir entièrement le texte de chaque attestation (certificat
+d'aptitude, arrêt de travail, dispense...) à chaque consultation. Il était
+indispensable de pouvoir configurer des modèles types réutilisables.
+
+CE QUI A ETE FAIT
+-----------------
+- Création d'un nouveau modèle `medical.attestation.template` pour stocker les
+  modèles d'attestations configurables (Nom, Titre à imprimer, Contenu par défaut).
+- Ajout d'une option d'archivage (`active`) et de tri par drag-and-drop (`sequence`).
+- Ajout du menu "Modèles d'attestations" sous la rubrique "Configuration".
+- Liaison du modèle d'attestation (`template_id`) lors de la création d'un document.
+- Ajout d'un automatisme (`@api.onchange`) : dès que le médecin choisit un modèle
+  dans la consultation, le titre et le texte par défaut sont chargés automatiquement
+  et restent modifiables si nécessaire.
+- Ajout des droits d'accès correspondants pour la secrétaire, le docteur et l'admin.
+
+FICHIERS CREES / MODIFIES
+-------------------------
+- [NEW] medical_consultation/models/attestation_template.py
+- [NEW] medical_consultation/views/attestation_template_views.xml
+- medical_consultation/models/__init__.py
+- medical_consultation/models/consultation.py
+- medical_consultation/views/consultation_views.xml
+- medical_consultation/views/medical_consultation_menu.xml
+- medical_consultation/security/ir.model.access.csv
+- medical_consultation/__manifest__.py
+
+
+================================================================================
+3. LIGNES D'ORDONNANCE MIXTES (MEDICAMENTS ET EXAMENS/SOINS)
+================================================================================
+
+POURQUOI ?
+----------
+L'ordonnance ne permettait de prescrire que des médicaments enregistrés en base.
+Le médecin avait besoin de prescrire d'autres éléments libres (ex: examens comme 
+un "Echodoppler", soins de kinésithérapie, etc.) avec un titre et des consignes.
+
+CE QUI A ETE FAIT
+-----------------
+- Ajout d'un sélecteur "Type de ligne" (`line_type`) offrant deux choix :
+  * Médicament (comportement d'origine, champs médicaments requis)
+  * Autre (Soin, Examen...) (champs libres titre et description)
+- Rendu des champs `medication_id` et `dosage` optionnels au niveau du modèle
+  pour supporter le mode personnalisé, encadrés par des contraintes de cohérence
+  python (`@api.constrains`).
+- Dynamisation de l'affichage dans la table de saisie : les colonnes changent
+  de visibilité selon le type de ligne choisi.
+
+FICHIERS MODIFIES
+-----------------
+- medical_consultation/models/consultation.py
+- medical_consultation/views/consultation_views.xml
+
+
+================================================================================
+4. NOUVEAU TEMPLATE D'ORDONNANCE (FORMAT CABINET MEDICAL AVEC LOGO)
+================================================================================
+
+POURQUOI ?
+----------
+Le format tabulaire par défaut d'Odoo ne correspondait pas à la charte d'une 
+ordonnance classique. Il fallait un design minimaliste type "ordonnancier",
+affichant l'âge réel du patient, l'en-tête du docteur complet, et le logo du cabinet.
+
+CE QUI A ETE FAIT
+-----------------
+- Ajout d'un champ calculé `age` sur le patient.
+- Ajout de champs d'adresse de cabinet (`street`, `zip`, `city`) sur le modèle docteur.
+- Refonte complète du PDF d'ordonnance (`prescription_report.xml`) :
+  * Intégration du logo de la société (du cabinet) s'il est configuré en haut à gauche.
+  * Bloc docteur (nom, spécialité) et adresse alignés en haut.
+  * Numéro de téléphone du médecin sous la ligne de séparation.
+  * Section patient avec son nom, son âge exact (ex: "Age : 24 ans") et son téléphone.
+  * Affichage en liste épurée (sans bordures de tableau) : médicaments en majuscules
+    grasses et examens en gras, suivis de leurs descriptions respectives en retrait.
+  * Zone de signature "Signature et tampon :" en bas à droite.
+
+FICHIERS MODIFIES
+-----------------
+- medical_consultation/models/patient.py
+- medical_consultation/models/consultation.py
+- medical_consultation/views/consultation_views.xml
+- medical_consultation/report/prescription_report.xml
+
+
+================================================================================
+RECAPITULATIF DES FICHIERS CONCERNES
+================================================================================
+
+  #   Fichier                                     Action      Rôle
+  --- ------------------------------------------  ----------  ------------------------------------
+  1   models/attestation_template.py              [Nouveau]   Modèle pour modèles d'attestations
+  2   views/attestation_template_views.xml        [Nouveau]   Vues pour modèles d'attestations
+  3   models/patient.py                           [Modifié]   Calcul de l'âge du patient
+  4   models/consultation.py                      [Modifié]   Lignes ordonnance + Adresse médecin
+  5   views/consultation_views.xml                [Modifié]   Saisie dynamique ordonnance + Adresse
+  6   views/medical_consultation_menu.xml         [Modifié]   Ajout menu modèles d'attestations
+  7   security/ir.model.access.csv                [Modifié]   Droits d'accès modèles d'attestations
+  8   report/certificate_report.xml               [Modifié]   Rapport Certificat (Ville & Date)
+  9   report/prescription_report.xml              [Modifié]   Rapport Ordonnance (Nouveau design)
+  10  __manifest__.py                             [Modifié]   Enregistrement des nouvelles vues
+  11  models/__init__.py                          [Modifié]   Import du nouveau modèle python
+
+================================================================================

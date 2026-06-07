@@ -1,4 +1,13 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
+class MedicalDoctor(models.Model):
+    _inherit = 'medical.doctor'
+
+    street = fields.Char(string='Adresse (Rue)', default='2 Rue Jean Andreani')
+    zip = fields.Char(string='Code Postal', default='13090')
+    city = fields.Char(string='Ville', default='Aix-En-Provence')
+
 
 class MedicalConsultation(models.Model):
     _name = 'medical.consultation'
@@ -23,14 +32,15 @@ class MedicalConsultation(models.Model):
     
     prescription_line_ids = fields.One2many('medical.prescription.line', 'consultation_id', string='Ordonnances')
     document_ids = fields.One2many('medical.consultation.document', 'consultation_id', string='Attestations / Justificatifs')
-    city = fields.Char(string='Ville', default='Aix-En-Provence')
+
     treatment_summary = fields.Text(string='Traitement', compute='_compute_treatment_summary')
 
     @api.depends('prescription_line_ids.medication_id', 'prescription_line_ids.dosage')
     def _compute_treatment_summary(self):
         for rec in self:
-            if rec.prescription_line_ids:
-                rec.treatment_summary = ', '.join([f"{p.medication_id.name} ({p.dosage})" for p in rec.prescription_line_ids if p.medication_id])
+            med_lines = rec.prescription_line_ids.filtered(lambda l: l.line_type == 'medication' and l.medication_id)
+            if med_lines:
+                rec.treatment_summary = ', '.join([f"{p.medication_id.name} ({p.dosage})" for p in med_lines])
             else:
                 rec.treatment_summary = ''
 
@@ -54,10 +64,30 @@ class MedicalPrescriptionLine(models.Model):
     _description = 'Prescription Line'
 
     consultation_id = fields.Many2one('medical.consultation', string='Consultation', ondelete='cascade')
-    medication_id = fields.Many2one('medical.medication', string='Médicament', required=True)
-    dosage = fields.Char(string='Posologie', required=True)
+    line_type = fields.Selection([
+        ('medication', 'Médicament'),
+        ('custom', 'Autre (Soin, Examen...)')
+    ], string='Type de ligne', default='medication', required=True)
+    
+    medication_id = fields.Many2one('medical.medication', string='Médicament')
+    dosage = fields.Char(string='Posologie')
     duration = fields.Char(string='Durée')
     note = fields.Char(string='Notes')
+
+    custom_title = fields.Char(string='Titre / Nom')
+    custom_text = fields.Text(string='Description / Instructions')
+
+    @api.constrains('line_type', 'medication_id', 'dosage', 'custom_title')
+    def _check_required_fields(self):
+        for rec in self:
+            if rec.line_type == 'medication':
+                if not rec.medication_id:
+                    raise ValidationError("Le médicament est obligatoire pour les lignes de type médicament.")
+                if not rec.dosage:
+                    raise ValidationError("La posologie est obligatoire pour les lignes de type médicament.")
+            elif rec.line_type == 'custom':
+                if not rec.custom_title:
+                    raise ValidationError("Le titre/nom est obligatoire pour les lignes personnalisées.")
 
 
 class MedicalConsultationDocument(models.Model):
@@ -65,5 +95,16 @@ class MedicalConsultationDocument(models.Model):
     _description = 'Attestation et Document Médical'
 
     consultation_id = fields.Many2one('medical.consultation', string='Consultation', ondelete='cascade')
+    template_id = fields.Many2one('medical.attestation.template', string='Modèle d\'attestation')
     title = fields.Char(string='Titre du document', required=True)
     content = fields.Text(string='Contenu du document', required=True)
+    city = fields.Char(string='Ville', default='Aix-En-Provence')
+    document_date = fields.Date(string='Date du document', default=fields.Date.today)
+
+    @api.onchange('template_id')
+    def _onchange_template_id(self):
+        if self.template_id:
+            self.title = self.template_id.title
+            if self.template_id.content:
+                self.content = self.template_id.content
+

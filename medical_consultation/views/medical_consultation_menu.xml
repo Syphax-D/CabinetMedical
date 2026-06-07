@@ -17,4 +17,10 @@
               parent="medical_base.medical_configuration_menu"
               action="action_medical_medication"
               sequence="30"/>
+
+    <menuitem id="medical_attestation_template_menu"
+              name="Modèles d'attestations"
+              parent="medical_base.medical_configuration_menu"
+              action="action_medical_attestation_template"
+              sequence="40"/>
 </odoo>

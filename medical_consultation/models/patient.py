@@ -5,6 +5,17 @@ class MedicalPatient(models.Model):
     _inherit = 'medical.patient'
 
     consultation_ids = fields.One2many('medical.consultation', 'patient_id', string='Consultations')
+    age = fields.Integer(string="Âge", compute="_compute_age")
+
+    @api.depends('birth_date')
+    def _compute_age(self):
+        for rec in self:
+            if rec.birth_date:
+                today = fields.Date.today()
+                rec.age = today.year - rec.birth_date.year - ((today.month, today.day) < (rec.birth_date.month, rec.birth_date.day))
+            else:
+                rec.age = 0
+
 
     consultation_count = fields.Integer(
         string='Consultations',

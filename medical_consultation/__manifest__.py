@@ -17,6 +17,7 @@
         'views/medication_views.xml',
         'views/consultation_views.xml',
         'views/patient_views.xml',
+        'views/attestation_template_views.xml',
         'views/medical_consultation_menu.xml',
     ],
     'installable': True,

@@ -75,8 +75,8 @@
                             <p>
                                 Certificat établi à
                                 <strong>
-                                    <t t-if="doc.consultation_id.city">
-                                        <t t-esc="doc.consultation_id.city"/>
+                                    <t t-if="doc.city">
+                                        <t t-esc="doc.city"/>
                                     </t>
                                     <t t-else="">
                                         ___________
@@ -84,7 +84,12 @@
                                 </strong>,
                                 le
                                 <strong>
-                                    <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                                    <t t-if="doc.document_date">
+                                        <span t-field="doc.document_date" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                                    </t>
                                 </strong>
                             </p>
                         </div>
