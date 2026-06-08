@@ -7,6 +7,7 @@ import pytz
 class MedicalAppointment(models.Model):
     _name = 'medical.appointment'
     _description = 'Rendez-vous Médical'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Référence', required=True, copy=False, readonly=True, default='New')
     patient_id = fields.Many2one('medical.patient', string='Patient', required=True)

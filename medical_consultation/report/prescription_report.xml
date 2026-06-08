@@ -9,60 +9,108 @@
         <field name="print_report_name">'Ordonnance - %s' % (object.name)</field>
         <field name="binding_model_id" ref="model_medical_consultation"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="medical_consultation.paperformat_a5"/>
     </record>
 
     <template id="report_prescription_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <div class="row">
-                            <div class="col-12 text-center" style="margin-bottom: 20px;">
-                                <h2>Ordonnance Médicale</h2>
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: sans-serif; font-size: 14px; line-height: 1.6; padding: 10px;">
+                        
+                        <!-- Header Section -->
+                        <div class="row" style="margin-top: 10px; display: flex; align-items: center;">
+                            <!-- Logo Column -->
+                            <div class="col-2" t-if="doc.env.company.logo">
+                                <img t-att-src="image_data_uri(doc.env.company.logo)" style="max-height: 55px; max-width: 100%; object-fit: contain;"/>
                             </div>
-                        </div>
-                        <div class="row mt32 mb32" style="font-size: 16px;">
-                            <div class="col-6">
-                                <strong>Docteur:</strong> <span t-field="doc.doctor_id.name"/><br/>
-                                <strong>Date:</strong> <span t-field="doc.consultation_date" t-options='{"widget": "date"}'/>
+                            <!-- Doctor Info Column -->
+                            <div t-att-class="'col-5' if doc.env.company.logo else 'col-6'">
+                                <span style="font-size: 16px; font-weight: bold; display: block;">
+                                    Dr <t t-esc="doc.doctor_id.name"/>
+                                </span>
+                                <span style="font-size: 13px; color: #333;" t-if="doc.doctor_id.specialty_id">
+                                    <t t-esc="doc.doctor_id.specialty_id.name"/>
+                                </span>
                             </div>
-                            <div class="col-6 text-end">
-                                <strong>Patient:</strong> <span t-field="doc.patient_id.name"/><br/>
-                                <strong>Réf Consultation:</strong> <span t-field="doc.name"/>
+                            <!-- Address Column -->
+                            <div t-att-class="'col-5 text-end' if doc.env.company.logo else 'col-6 text-end'" style="font-size: 13px;">
+                                <t t-if="doc.doctor_id.street">
+                                    <span t-field="doc.doctor_id.street"/><br/>
+                                </t>
+                                <t t-if="doc.doctor_id.zip or doc.doctor_id.city">
+                                    <span t-field="doc.doctor_id.zip"/> <span t-field="doc.doctor_id.city"/><br/>
+                                </t>
                             </div>
                         </div>
                         
-                        <div style="margin-top: 40px; margin-bottom: 20px;">
-                            <h4>Prescription:</h4>
-                        </div>
-                        <table class="table table-sm o_main_table mt16">
-                            <thead>
-                                <tr>
-                                    <th>Médicament</th>
-                                    <th>Dosage</th>
-                                    <th>Durée</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="doc.prescription_line_ids" t-as="line">
-                                    <tr>
-                                        <td><span t-field="line.medication_id.name"/></td>
-                                        <td><span t-field="line.dosage"/></td>
-                                        <td><span t-field="line.duration"/></td>
-                                        <td><span t-field="line.note"/></td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-
-                        <div class="row" style="margin-top: 50px;">
-                            <div class="col-12 text-end">
-                                <strong>Signature du médecin</strong>
-                                <br/><br/><br/>
-                                _______________________
+                        <div class="row">
+                            <div class="col-12">
+                                <hr style="border-top: 2px solid #000; margin-top: 8px; margin-bottom: 4px;"/>
                             </div>
                         </div>
+                        
+                        <div class="row">
+                            <div class="col-12 text-end" style="font-style: italic; font-size: 13px; margin-bottom: 20px;">
+                                <t t-if="doc.doctor_id.phone">
+                                    <span t-field="doc.doctor_id.phone"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Patient Section -->
+                        <div class="row" style="margin-top: 20px; margin-bottom: 30px;">
+                            <div class="col-6">
+                                <strong style="font-size: 15px;"><span t-field="doc.patient_id.name"/></strong><br/>
+                                <strong>Age :</strong> <span t-field="doc.patient_id.age"/> ans<br/>
+                                <span t-field="doc.patient_id.phone"/>
+                            </div>
+                            <div class="col-6 text-end" style="font-size: 14px;">
+                                <span t-field="doc.doctor_id.city"/>, le <span t-field="doc.consultation_date" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/>
+                            </div>
+                        </div>
+
+                        <!-- Prescription Content Section -->
+                        <div style="margin-top: 40px; min-height: 220px;">
+                            <t t-foreach="doc.prescription_line_ids" t-as="line">
+                                <div style="margin-bottom: 20px;">
+                                    <!-- For Medication lines -->
+                                    <t t-if="line.line_type == 'medication'">
+                                        <div style="font-weight: bold; font-size: 15px; text-transform: uppercase;">
+                                            <span t-field="line.medication_id.name"/>
+                                        </div>
+                                        <div style="margin-left: 5px; font-size: 13.5px; color: #111;">
+                                            <span t-field="line.dosage"/>
+                                            <t t-if="line.duration">
+                                                , <span t-field="line.duration"/>
+                                            </t>
+                                            <t t-if="line.note">
+                                                , <span t-field="line.note"/>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    
+                                    <!-- For Custom lines -->
+                                    <t t-if="line.line_type == 'custom'">
+                                        <div style="font-weight: bold; font-size: 15px;">
+                                            <span t-field="line.custom_title"/>
+                                        </div>
+                                        <div style="margin-left: 5px; font-size: 13.5px; color: #111;">
+                                            <span t-field="line.custom_text"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="row" style="margin-top: 50px;">
+                            <div class="col-12 text-end" style="padding-right: 20px;">
+                                <strong>Signature et tampon :</strong>
+                                <br/><br/><br/>
+                            </div>
+                        </div>
+                        
                     </div>
                 </t>
             </t>

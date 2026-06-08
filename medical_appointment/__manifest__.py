@@ -5,13 +5,14 @@
     'description': 'Schedule and manage appointments between patients and doctors.',
     'author': 'DIB Syphax / AMROUN Said',
     'category': 'Healthcare',
-    'depends': ['base', 'medical_base'],
+    'depends': ['base', 'medical_base', 'mail'],
     'data': [
         'security/security_rules.xml',
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'views/dashboard_action.xml',
         'views/appointment_views.xml',
+        'views/patient_views.xml',
         'views/medical_appointment_menu.xml',
     ],
     'assets': {

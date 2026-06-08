@@ -9,6 +9,7 @@
         <field name="print_report_name">'Certificat - %s' % (object.title)</field>
         <field name="binding_model_id" ref="model_medical_consultation_document"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="medical_consultation.paperformat_a5"/>
     </record>
 
     <template id="report_certificate_document">
@@ -74,8 +75,8 @@
                             <p>
                                 Certificat établi à
                                 <strong>
-                                    <t t-if="doc.consultation_id.city">
-                                        <t t-esc="doc.consultation_id.city"/>
+                                    <t t-if="doc.city">
+                                        <t t-esc="doc.city"/>
                                     </t>
                                     <t t-else="">
                                         ___________
@@ -83,7 +84,12 @@
                                 </strong>,
                                 le
                                 <strong>
-                                    <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                                    <t t-if="doc.document_date">
+                                        <span t-field="doc.document_date" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                                    </t>
                                 </strong>
                             </p>
                         </div>
