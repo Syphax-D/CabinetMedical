@@ -28,7 +28,7 @@ Compte Rendu 2 : Évolutions du Système de Gestion Médicale
 * Comment : Validation du principe d'isolation stricte : le code natif (le "moteur" Odoo) est isolé dans son propre répertoire versionné, tandis que nos modules (medical_base, medical_appointment, medical_consultation) sont cloisonnés de façon sécurisée dans le répertoire indépendant "custom_addons".
 
 4. Création du Module de Portail Web (medical_website)
----------------------------------------------------------------
+----------------------------------------------------
 
 * Quoi : Développement d'un nouveau module Odoo "medical_website" offrant une interface web publique pour le cabinet MédicSS, accessible depuis n'importe quel navigateur sans accès au backend Odoo.
 * Pourquoi : Permettre aux patients de prendre rendez-vous en ligne de manière autonome, sans nécessiter de compte ni d'accès à l'interface d'administration. Il s'agit d'améliorer l'accessibilité du cabinet et de moderniser l'expérience patient.
@@ -44,4 +44,3 @@ Création d'un module respectant la structure standard Odoo, composé d'un contr
 
 * Design et identité visuelle :
 - Développement d'une charte graphique cohérente avec l'identité du cabinet MédicSS. Le thème violet (couleur principale #6a1b9a) a été choisi pour correspondre au logo du cabinet. La page d'accueil intègre une image médicale en arrière-plan avec un dégradé violet, une section "Nos services" avec trois cartes, une section "À propos" et une section d'appel à l'action.
-
