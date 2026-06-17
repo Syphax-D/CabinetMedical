@@ -219,7 +219,7 @@
                 <div class="container">
                     <div class="text-center mb-4">
                         <p class="m-eyebrow"><span class="m-eyebrow-dot"></span>Trouvez votre médecin</p>
-                        <h1 class="med-hero-title">Plus de 500 médecins <em>près de chez vous</em></h1>
+                        <h1 class="med-hero-title">Nos médecins <em>à votre écoute</em></h1>
                     </div>
                     <div class="med-search-bar">
                         <div class="med-search-field">
@@ -230,42 +230,12 @@
                 </div>
             </section>
 
-            <!-- LISTE AVEC SIDEBAR -->
+            <!-- LISTE MÉDECINS -->
             <section class="med-listing">
                 <div class="container">
                     <div class="row g-4">
 
-                        <!-- SIDEBAR FILTRES -->
-                        <aside class="col-lg-3">
-                            <div class="med-filters">
-                                <div class="med-filters-header">
-                                    <h5>Filtres</h5>
-                                    <button class="med-filter-reset">Réinitialiser</button>
-                                </div>
-
-                                <div class="med-filter-group">
-                                    <p class="med-filter-label">Disponibilités</p>
-                                    <label class="med-filter-radio"><input type="radio" name="dispo" checked="checked"/> <span>Toutes</span></label>
-                                    <label class="med-filter-radio"><input type="radio" name="dispo"/> <span>Aujourd'hui</span></label>
-                                    <label class="med-filter-radio"><input type="radio" name="dispo"/> <span>Demain</span></label>
-                                    <label class="med-filter-radio"><input type="radio" name="dispo"/> <span>Moins de 3 jours</span></label>
-                                    <label class="med-filter-radio"><input type="radio" name="dispo"/> <span>Cette semaine</span></label>
-                                </div>
-
-                                <div class="med-filter-group">
-                                    <p class="med-filter-label">Spécialités</p>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Médecine générale</span></label>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Cardiologie</span></label>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Dermatologie</span></label>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Pédiatrie</span></label>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Gynécologie</span></label>
-                                    <label class="med-filter-check"><input type="checkbox"/> <span>Ophtalmologie</span></label>
-                                </div>
-                            </div>
-                        </aside>
-
-                        <!-- LISTE MÉDECINS -->
-                        <div class="col-lg-9">
+                        <div class="col-12">
                             <!-- TOOLBAR -->
                             <div class="med-toolbar">
                                 <div>
@@ -424,10 +394,10 @@
                         <!-- ÉTAPE 2 : CRÉNEAUX DU JOUR -->
                         <div class="rdv-slots-section">
                             <h3 class="rdv-step-title"><span class="rdv-step-num">2</span> Choisissez un créneau</h3>
-                            <p class="rdv-step-sub">Consultations de 30 minutes · 8h - 17h</p>
+                            <p class="rdv-step-sub">Consultations de 30 minutes · Créneaux selon les disponibilités du médecin</p>
 
                             <div class="rdv-slots-day" id="rdv-slots-container">
-                                <!-- généré en JS -->
+                                <!-- généré dynamiquement via fetch -->
                             </div>
                         </div>
 
@@ -519,6 +489,10 @@
                 </section>
             </t>
 
+            <t t-if="selected_doctor">
+            <script>
+                var RDV_DOCTOR_ID = <t t-esc="selected_doctor.id"/>;
+            </script>
             <script>
                 (function() {
                     var dateInput = document.getElementById('rdv-date-input');
@@ -532,40 +506,7 @@
                     var days = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
                     var months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-                    function renderSlots() {
-                        var dateStr = dateInput.value;
-                        if (!dateStr) return;
-                        var parts = dateStr.split('-');
-                        var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-                        var today = new Date();
-                        today.setHours(0,0,0,0);
-
-                        dateLabel.textContent = days[d.getDay()].charAt(0).toUpperCase() + days[d.getDay()].slice(1) + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-
-                        if (d.getDay() === 0) {
-                            slotsContainer.innerHTML = '&lt;p class="rdv-no-slots"&gt;Le cabinet est fermé le dimanche. Sélectionnez un autre jour.&lt;/p&gt;';
-                            return;
-                        }
-
-                        var html = '';
-                        var now = new Date();
-                        var isToday = (d.getTime() === today.getTime());
-
-                        for (var h = 8; h &lt; 17; h++) {
-                            for (var m = 0; m &lt; 60; m += 30) {
-                                var slotDate = new Date(d);
-                                slotDate.setHours(h, m, 0, 0);
-                                if (isToday &amp;&amp; slotDate &lt; now) continue;
-                                var hh = String(h).padStart(2,'0');
-                                var mm = String(m).padStart(2,'0');
-                                var val = parts[0]+'-'+parts[1]+'-'+parts[2]+'T'+hh+':'+mm;
-                                var lbl = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' à ' + hh + ':' + mm;
-                                html += '&lt;button type="button" class="rdv-slot-btn" data-value="'+val+'" data-label="'+lbl+'"&gt;'+hh+':'+mm+'&lt;/button&gt;';
-                            }
-                        }
-                        if (!html) html = '&lt;p class="rdv-no-slots"&gt;Aucun créneau disponible ce jour.&lt;/p&gt;';
-                        slotsContainer.innerHTML = html;
-
+                    function attachSlotListeners() {
                         slotsContainer.querySelectorAll('.rdv-slot-btn').forEach(function(btn) {
                             btn.addEventListener('click', function() {
                                 slotsContainer.querySelectorAll('.rdv-slot-btn').forEach(function(b) { b.classList.remove('selected'); });
@@ -578,10 +519,45 @@
                         });
                     }
 
+                    function renderSlots() {
+                        var dateStr = dateInput.value;
+                        if (!dateStr) return;
+                        var parts = dateStr.split('-');
+                        var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+
+                        dateLabel.textContent = days[d.getDay()].charAt(0).toUpperCase() + days[d.getDay()].slice(1) + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+
+                        slotsContainer.innerHTML = '&lt;p class="rdv-no-slots"&gt;Chargement des créneaux...&lt;/p&gt;';
+
+                        fetch('/medical/rdv/slots?doctor_id=' + RDV_DOCTOR_ID + '&amp;date=' + dateStr)
+                            .then(function(resp) { return resp.json(); })
+                            .then(function(data) {
+                                if (!data.slots || data.slots.length === 0) {
+                                    var msg = data.doctor_unavailable
+                                        ? 'Le médecin n\'est pas disponible ce jour-là.'
+                                        : 'Aucun créneau disponible ce jour.';
+                                    slotsContainer.innerHTML = '&lt;p class="rdv-no-slots"&gt;' + msg + '&lt;/p&gt;';
+                                    return;
+                                }
+                                var html = '';
+                                data.slots.forEach(function(s) {
+                                    var val = parts[0]+'-'+parts[1]+'-'+parts[2]+'T'+s;
+                                    var lbl = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' à ' + s;
+                                    html += '&lt;button type="button" class="rdv-slot-btn" data-value="'+val+'" data-label="'+lbl+'"&gt;'+s+'&lt;/button&gt;';
+                                });
+                                slotsContainer.innerHTML = html;
+                                attachSlotListeners();
+                            })
+                            .catch(function() {
+                                slotsContainer.innerHTML = '&lt;p class="rdv-no-slots"&gt;Erreur de chargement des créneaux.&lt;/p&gt;';
+                            });
+                    }
+
                     dateInput.addEventListener('change', renderSlots);
                     renderSlots();
                 })();
             </script>
+            </t>
         </t>
     </template>
 

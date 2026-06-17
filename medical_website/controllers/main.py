@@ -507,3 +507,77 @@ class MedicalWebsite(http.Controller):
 
         except Exception as e:
             return request.redirect('/medical/rdv/reporter/' + kwargs.get('rdv_id', '0') + '?error=' + str(e))
+
+    @http.route('/medical/rdv/slots', type='http', auth='public', website=True, methods=['GET'])
+    def rdv_available_slots(self, doctor_id=None, date=None, **kwargs):
+        import json
+        from datetime import datetime
+        import pytz
+
+        try:
+            doctor_id = int(doctor_id)
+            d = datetime.strptime(date, '%Y-%m-%d')
+        except Exception:
+            return request.make_response(
+                json.dumps({'slots': []}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        doctor = request.env['medical.doctor'].sudo().browse(doctor_id)
+        if not doctor.exists():
+            return request.make_response(
+                json.dumps({'slots': []}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        day_of_week = str(d.weekday())  # 0=Lundi ... 6=Dimanche
+        availability = doctor.availability_ids.filtered(
+            lambda a: a.day_of_week == day_of_week
+        )
+
+        if not availability:
+            return request.make_response(
+                json.dumps({'slots': [], 'doctor_unavailable': True}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        hours = sorted(availability.slot_ids.mapped('start_hour'))
+
+        now = datetime.now()
+        is_today = d.date() == now.date()
+
+        # Récupérer les RDV déjà pris ce jour-là pour ce médecin
+        user_tz = pytz.timezone('Europe/Paris')
+        start_of_day_local = d.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day_local = d.replace(hour=23, minute=59, second=59, microsecond=0)
+        start_utc = user_tz.localize(start_of_day_local).astimezone(pytz.utc).replace(tzinfo=None)
+        end_utc = user_tz.localize(end_of_day_local).astimezone(pytz.utc).replace(tzinfo=None)
+
+        booked = request.env['medical.appointment'].sudo().search([
+            ('doctor_id', '=', doctor_id),
+            ('appointment_date', '>=', start_utc),
+            ('appointment_date', '<=', end_utc),
+            ('state', '!=', 'cancelled'),
+        ])
+        booked_hours = set()
+        for b in booked:
+            local_dt = pytz.utc.localize(b.appointment_date).astimezone(user_tz)
+            booked_hours.add(round(local_dt.hour + local_dt.minute / 60.0, 2))
+
+        result = []
+        for h in hours:
+            hh = int(h)
+            mm = int(round((h - hh) * 60))
+            slot_dt = d.replace(hour=hh, minute=mm)
+
+            if is_today and slot_dt <= now:
+                continue
+            if any(abs(h - bh) < 0.01 for bh in booked_hours):
+                continue
+
+            result.append('%02d:%02d' % (hh, mm))
+
+        return request.make_response(
+            json.dumps({'slots': result}),
+            headers=[('Content-Type', 'application/json')]
+        )
