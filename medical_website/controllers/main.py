@@ -1,6 +1,7 @@
 from odoo import http
 from odoo.http import request
 from datetime import datetime
+from odoo.exceptions import ValidationError
 
 
 class MedicalWebsite(http.Controller):
@@ -391,13 +392,20 @@ class MedicalWebsite(http.Controller):
         if not session_patient_id or session_patient_id != int(patient_id):
             return request.redirect('/medical/mes-rdv')
 
+        base_redirect = '/medical/espace-patient/' + str(patient_id)
+        rdv = request.env['medical.appointment'].sudo().browse(int(rdv_id))
+
+        # Le RDV doit exister, appartenir au patient et être annulable
+        if not rdv.exists() or rdv.patient_id.id != int(patient_id) or rdv.state not in ('draft', 'confirmed'):
+            return request.redirect(base_redirect)
+
         try:
-            rdv = request.env['medical.appointment'].sudo().browse(int(rdv_id))
-            if rdv and rdv.patient_id.id == int(patient_id) and rdv.state in ('draft', 'confirmed'):
-                rdv.sudo().write({'state': 'cancelled'})
-        except Exception:
-            request.env.cr.rollback()
-        return request.redirect('/medical/espace-patient/' + str(patient_id))
+            rdv.action_cancel_website()
+        except ValidationError:
+            # Annulation à moins de 2h : bloquée, on prévient le patient
+            return request.redirect(base_redirect + '?cancel_error=delai')
+
+        return request.redirect(base_redirect + '?cancel_success=1')
 
     @http.route('/medical/rdv/details/<int:rdv_id>', type='http', auth='public', website=True)
     def rdv_details(self, rdv_id, **kwargs):

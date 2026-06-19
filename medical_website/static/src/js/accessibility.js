@@ -1,16 +1,17 @@
 (function() {
     'use strict';
 
-    // ========== INJECTION DU BOUTON ET DU PANNEAU ==========
+    //INJECTION DU BOUTON ET DU PANNEAU
     function injectAccessibilityUI() {
-        if (document.getElementById('a11y-fab')) return;
+        if (document.getElementById('a11y-fab')) return; // voir si ca n'existe pas deja
 
         // Bouton flottant
         var fab = document.createElement('button');
-        fab.id = 'a11y-fab';
-        fab.setAttribute('aria-label', "Options d'accessibilité");
+        fab.id = 'a11y-fab'; //un id au bouton
+        fab.setAttribute('aria-label', "Options d'accessibilité"); //on lui donne un aria-label
+        // une icone svg
         fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;"><circle cx="12" cy="4" r="2"/><path d="M19 13v-2c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v2"/><path d="M12 9v6"/><path d="M9 21l3-6 3 6"/></svg>';
-        document.body.appendChild(fab);
+        document.body.appendChild(fab); //on l'ajoute a la page
 
         // Panneau
         var panel = document.createElement('div');
@@ -54,7 +55,7 @@
             '</div>';
         document.body.appendChild(panel);
 
-        // Events
+        // Evennements
         fab.addEventListener('click', function() {
             panel.classList.toggle('a11y-open');
         });
@@ -74,7 +75,7 @@
             });
         });
 
-        // Toggles
+        // les fnctionnalites (contrast...)
         panel.querySelectorAll('input[type="checkbox"][data-setting]').forEach(function(input) {
             input.addEventListener('change', function() {
                 var setting = input.getAttribute('data-setting');
@@ -83,14 +84,14 @@
             });
         });
 
-        // Reset
+        // Reinistianaliser
         panel.querySelector('.a11y-reset').addEventListener('click', function() {
             localStorage.removeItem('a11y');
             location.reload();
         });
     }
 
-    // ========== APPLICATION DES PRÉFÉRENCES ==========
+    //==APPLICATION DES PRÉFÉRENCES==
     function applySetting(name, value) {
         var html = document.documentElement;
         if (name === 'fontSize') {
@@ -135,7 +136,7 @@
         }, 50);
     }
 
-    // ========== INIT ==========
+    // INITIANALISER
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             loadSettings();

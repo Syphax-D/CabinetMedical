@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="dark_mode_assets" inherit_id="website.layout" name="Dark Mode Assets" priority="1">
-        <xpath expr="//head" position="inside">
+        <xpath expr="//head" position="inside"> <!--chercher dans head-->
+
+            <!--les polices-->
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
             <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
