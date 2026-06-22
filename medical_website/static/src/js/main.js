@@ -1,18 +1,21 @@
-// === REVEAL ON SCROLL ===
+// animation au scroll
 (function() {
     function initReveal() {
         var elements = document.querySelectorAll('[data-reveal]');
-        if (!elements.length) return;
+        // tous les elems avec l'attribut data-reveal
+        if (!elements.length) return; // si on trouve pas on s'arrete
 
+        // IntersectionObserver c'est un outil du navigateur qui
+        // surveille si un élément entre dans la zone visible de l'écran
         if ('IntersectionObserver' in window) {
             var observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
                         var delay = entry.target.getAttribute('data-reveal-delay') || 0;
                         setTimeout(function() {
-                            entry.target.classList.add('is-revealed');
+                            entry.target.classList.add('is-revealed'); // apres le delai on ajoute cette classe pour declancher l'animation
                         }, parseInt(delay));
-                        observer.unobserve(entry.target);
+                        observer.unobserve(entry.target); // arrete de surveiller pour pas refaire l'animation
                     }
                 });
             }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
@@ -31,13 +34,15 @@
 })();
 
 function initDarkMode() {
+    //verifier si le dark mode est deja active
     var isDark = localStorage.getItem('medicss_dark') === 'true';
     if (isDark) {
+        // l'appliquer directement sans cliquer la dessus encore une autre fois
         document.body.classList.add('dark-mode');
         document.documentElement.classList.add('dark-mode');
     }
 
-    // Créer le bouton
+    // Creer le bouton
     var btn = document.createElement('button');
     btn.id = 'dark-mode-toggle';
     btn.className = 'dark-toggle-navbar';
@@ -46,7 +51,7 @@ function initDarkMode() {
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     btn.type = 'button';
 
-    // Essayer de l'insérer dans la navbar
+    // l'inserer dans la navbar
     var navbar = document.querySelector('#top_menu') ||
                  document.querySelector('.navbar-nav') ||
                  document.querySelector('nav .container');
@@ -59,7 +64,7 @@ function initDarkMode() {
     } else {
         document.body.appendChild(btn);
     }
-
+    // au click isDark deviendra !isDark, on inverse apres on sauvgarde
     btn.addEventListener('click', function() {
         isDark = !isDark;
         document.body.classList.toggle('dark-mode', isDark);
@@ -68,7 +73,7 @@ function initDarkMode() {
         btn.innerHTML = isDark
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-    });
+    }); // changer l'icone
 }
 
 if (document.readyState === 'loading') {
@@ -76,73 +81,3 @@ if (document.readyState === 'loading') {
 } else {
     initDarkMode();
 }
-// === PAGE RDV : sélection de date + créneaux ===
-(function() {
-    function initRdvPicker() {
-        var dateInput = document.getElementById('rdv-date-input');
-        var dateLabel = document.getElementById('rdv-date-label');
-        var slotsContainer = document.getElementById('rdv-slots-container');
-        var selectedText = document.getElementById('rdv-selected-text');
-        var dateInputHidden = document.getElementById('appointment_date_input');
-        var formSection = document.getElementById('rdv-form-section');
-        if (!dateInput) return;
-
-        var days = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-        var months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-
-        function renderSlots() {
-            var dateStr = dateInput.value;
-            if (!dateStr) return;
-            var parts = dateStr.split('-');
-            var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-            var today = new Date();
-            today.setHours(0,0,0,0);
-
-            dateLabel.textContent = days[d.getDay()].charAt(0).toUpperCase() + days[d.getDay()].slice(1) + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-
-            if (d.getDay() === 0) {
-                slotsContainer.innerHTML = '<p class="rdv-no-slots">Le cabinet est fermé le dimanche. Sélectionnez un autre jour.</p>';
-                return;
-            }
-
-            var html = '';
-            var now = new Date();
-            var isToday = (d.getTime() === today.getTime());
-
-            for (var h = 8; h < 17; h++) {
-                for (var m = 0; m < 60; m += 30) {
-                    var slotDate = new Date(d);
-                    slotDate.setHours(h, m, 0, 0);
-                    if (isToday && slotDate < now) continue;
-                    var hh = String(h).padStart(2,'0');
-                    var mm = String(m).padStart(2,'0');
-                    var val = parts[0]+'-'+parts[1]+'-'+parts[2]+'T'+hh+':'+mm;
-                    var lbl = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' à ' + hh + ':' + mm;
-                    html += '<button type="button" class="rdv-slot-btn" data-value="'+val+'" data-label="'+lbl+'">'+hh+':'+mm+'</button>';
-                }
-            }
-            if (!html) html = '<p class="rdv-no-slots">Aucun créneau disponible ce jour.</p>';
-            slotsContainer.innerHTML = html;
-
-            slotsContainer.querySelectorAll('.rdv-slot-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    slotsContainer.querySelectorAll('.rdv-slot-btn').forEach(function(b) { b.classList.remove('selected'); });
-                    btn.classList.add('selected');
-                    dateInputHidden.value = btn.getAttribute('data-value');
-                    selectedText.textContent = btn.getAttribute('data-label');
-                    formSection.style.display = 'block';
-                    setTimeout(function() { formSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
-                });
-            });
-        }
-
-        dateInput.addEventListener('change', renderSlots);
-        renderSlots();
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initRdvPicker);
-    } else {
-        initRdvPicker();
-    }
-})();

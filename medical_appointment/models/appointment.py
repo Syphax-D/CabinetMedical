@@ -149,6 +149,20 @@ class MedicalAppointment(models.Model):
         for rec in self:
             rec.state = 'cancelled'
 
+    def action_cancel_website(self):
+        for rec in self:
+            if rec.appointment_date:
+                maintenant_utc = datetime.utcnow()
+                delta = rec.appointment_date - maintenant_utc
+                if delta.total_seconds() < 2 * 3600:
+                    raise ValidationError(
+                        "Vous ne pouvez plus annuler ce rendez-vous en ligne "
+                        "moins de 2 heures avant l'heure prévue. "
+                        "Merci d'appeler le secrétariat au 01 23 45 67 89."
+                    )
+        # Au-delà de 2h : annulation classique
+        return self.action_cancel()
+
     @api.model
     def _cron_notify_tomorrow_appointments(self):
         # Retrieve target timezone
