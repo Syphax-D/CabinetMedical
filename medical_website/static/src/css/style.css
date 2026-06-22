@@ -1,22 +1,17 @@
-/* ===== VARIABLES ===== */
 :root {
     --m-teal: #00897b;
     --m-teal-dark: #00695c;
     --m-emerald: #10b981;
     --m-emerald-dark: #059669;
     --m-blue: #3b82f6;
-
     --m-primary: #0d9488;
     --m-primary-dark: #0f766e;
-
     --m-bg: #fafbfc;
     --m-bg-soft: #f1f5f9;
     --m-text: #0f172a;
     --m-text-muted: #64748b;
-
     --m-gradient-primary: linear-gradient(135deg, #0d9488 0%, #10b981 100%);
     --m-gradient-dark: linear-gradient(135deg, #0f766e 0%, #064e3b 100%);
-
     --m-font-display: 'Space Grotesk', system-ui, sans-serif;
     --m-font-body: 'Inter', system-ui, sans-serif;
     --m-font-serif: 'Playfair Display', Georgia, serif;
@@ -24,7 +19,6 @@
 
 * { font-family: var(--m-font-body); }
 
-/* ===== FOND MÉDICAL ===== */
 #wrapwrap {
     position: relative;
     background-color: var(--m-bg);
@@ -45,7 +39,6 @@
 }
 main, header, footer, nav { position: relative; z-index: 1; }
 
-/* ===== REVEAL ON SCROLL ===== */
 [data-reveal] {
     opacity: 0;
     transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
@@ -55,7 +48,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 [data-reveal="right"] { transform: translateX(40px); }
 [data-reveal].is-revealed { opacity: 1; transform: translate(0,0); }
 
-/* ===== HERO ACCUEIL ===== */
 .m-hero { padding: 100px 0 80px; position: relative; overflow: hidden; z-index: 1; }
 .m-hero-bg-blob {
     position: absolute;
@@ -153,7 +145,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     opacity: 0.15;
 }
 
-/* ===== BOUTONS ===== */
 .m-btn-primary {
     background: var(--m-gradient-primary);
     color: white;
@@ -193,7 +184,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .m-btn-light:hover { color: var(--m-text); transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.25); }
 
-/* ===== SECTIONS ===== */
 .m-section { padding: 90px 0; position: relative; z-index: 1; }
 .m-section-alt {
     background: linear-gradient(180deg, transparent 0%, rgba(236,253,245,0.4) 50%, transparent 100%);
@@ -223,7 +213,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     margin-right: auto;
 }
 
-/* ===== BENTO GRID ===== */
 .m-bento-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -332,7 +321,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .m-bento-link-sm:hover { color: var(--m-text); gap: 8px; }
 
-/* ===== ÉQUIPE ===== */
 .m-doctor-card-v3 {
     background: white;
     border-radius: 24px;
@@ -384,7 +372,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .m-doctor-btn-v2:hover { background: var(--m-primary); color: white; transform: translateY(-2px); }
 
-/* ===== PARCOURS PATIENT ===== */
 .m-care-step {
     background: white;
     padding: 32px 28px;
@@ -429,7 +416,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .m-care-step-text { color: var(--m-text-muted); line-height: 1.7; font-size: 0.92rem; margin: 0; }
 
-/* ===== CTA FINAL ===== */
 .m-cta-v2 {
     padding: 120px 0;
     position: relative;
@@ -487,7 +473,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     font-size: 0.9rem; font-weight: 500;
 }
 
-/* ===== PAGE MÉDECINS ===== */
 .med-hero {
     background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
     padding: 60px 0 40px;
@@ -627,7 +612,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     box-shadow: 0 10px 22px -4px rgba(13,148,136,0.55);
 }
 
-/* ===== PAGE RDV ===== */
 .rdv-hero {
     background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
     padding: 60px 0 50px;
@@ -937,7 +921,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     box-shadow: 0 15px 40px -8px rgba(13,148,136,0.7);
 }
 
-/* DATE PICKER RDV */
 .rdv-date-picker {
     display: flex;
     align-items: center;
@@ -988,7 +971,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     margin: 0;
 }
 
-/* GENRE */
 .rdv-gender-label {
     display: block;
     margin-bottom: 8px;
@@ -1023,7 +1005,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .rdv-gender-opt:hover span { border-color: rgba(13,148,136,0.4); }
 
-/* ===== PAGE RGPD ===== */
 .rgpd-page { position: relative; z-index: 1; }
 .rgpd-hero {
     background: var(--m-gradient-primary);
@@ -1083,7 +1064,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
 }
 .rgpd-block a:hover { color: var(--m-text); }
 
-/* RGPD CARDS (accueil) */
 .m-rgpd-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1129,7 +1109,6 @@ main, header, footer, nav { position: relative; z-index: 1; }
     .m-rgpd-grid { grid-template-columns: 1fr; }
 }
 
-/* ===== ÉLÉMENTS GÉNÉRIQUES ===== */
 h1, h2, h4 { color: var(--m-text); }
 .text-muted { color: var(--m-text-muted) !important; line-height: 1.6; }
 
@@ -1176,7 +1155,6 @@ h1, h2, h4 { color: var(--m-text); }
 .bg-warning { background: #f59e0b !important; color: white !important; }
 .bg-danger { background: #ef4444 !important; }
 
-/* FLATPICKR */
 .flatpickr-day.selected, .flatpickr-day.selected:hover {
     background: var(--m-primary) !important;
     border-color: var(--m-primary) !important;
@@ -1191,7 +1169,6 @@ h1, h2, h4 { color: var(--m-text); }
 .flatpickr-weekday { color: white !important; }
 .flatpickr-monthDropdown-months { background: var(--m-primary) !important; }
 
-/* ===== RÉSULTATS MES-RDV (timeline) ===== */
 .results-header {
     display: flex; align-items: center; gap: 15px;
     background: rgba(13,148,136,0.08);
@@ -1233,7 +1210,6 @@ h1, h2, h4 { color: var(--m-text); }
 .rdv-badge-done { background: rgba(16,185,129,0.15); color: var(--m-emerald-dark); }
 .rdv-badge-cancel { background: #fee2e2; color: #991b1b; }
 
-/* ===== CONFIRMATION ===== */
 .confirm-success-circle {
     width: 110px; height: 110px;
     border-radius: 50%;
@@ -1319,7 +1295,6 @@ h1, h2, h4 { color: var(--m-text); }
 }
 .confirm-btn-secondary:hover { background: rgba(13,148,136,0.05); color: var(--m-primary-dark); border-color: var(--m-primary); }
 
-/* ===== DARK TOGGLE ===== */
 .dark-toggle-navbar {
     width: 42px; height: 42px;
     border-radius: 50%;
@@ -1333,7 +1308,6 @@ h1, h2, h4 { color: var(--m-text); }
 }
 .dark-toggle-navbar:hover { background: rgba(13,148,136,0.1); transform: scale(1.1); }
 
-/* ===== MES RDV V2 ===== */
 .mesrdv-v2-page {
     position: relative;
     min-height: 100vh;
@@ -1581,7 +1555,6 @@ input[type="date"].mesrdv-v2-input { padding-top: 26px; }
     border-color: rgba(13,148,136,0.2);
 }
 
-/* Floating labels formulaire RDV */
 .rdv-form-v2 .mesrdv-v2-input {
     padding: 26px 16px 8px !important;
     height: auto !important;
@@ -1610,7 +1583,6 @@ input[type="date"].mesrdv-v2-input { padding-top: 26px; }
 }
 .rdv-form-v2 input[type="date"].mesrdv-v2-input { padding-top: 26px !important; }
 
-/* ===== CONTACT V2 ===== */
 .ctc-v2-page {
     position: relative;
     padding: 70px 0 100px;
@@ -1856,7 +1828,6 @@ input[type="date"].mesrdv-v2-input { padding-top: 26px; }
     background: var(--m-primary);
 }
 
-/* ===== ESPACE PATIENT V2 ===== */
 .esp-v2-page {
     position: relative;
     min-height: 100vh;
@@ -2280,7 +2251,6 @@ input[type="date"].mesrdv-v2-input { padding-top: 26px; }
     }
 }
 
-/* DÉTAILS RDV */
 .esp-v2-detail-label {
     color: var(--m-text-muted);
     font-size: 0.75rem;
@@ -2329,7 +2299,6 @@ input[type="date"].mesrdv-v2-input { padding-top: 26px; }
     border-color: #ef4444;
 }
 
-/* ===== MODE NUIT ===== */
 html.dark-mode #wrapwrap { background-color: #0a0f0e !important; }
 html.dark-mode #wrapwrap::before { color: rgba(52,211,153,0.06) !important; }
 
@@ -2420,7 +2389,6 @@ body.dark-mode .rdv-badge, body.dark-mode .rdv-item-date {
 body.dark-mode .rdv-date-picker { background: linear-gradient(160deg, #0f1714, #14211e) !important; border-color: rgba(52,211,153,0.15) !important; }
 body.dark-mode .rdv-date-field { background: #1a2624 !important; border-color: rgba(52,211,153,0.2) !important; color: #e2e8f0 !important; }
 
-/* MES RDV V2 dark */
 body.dark-mode .mesrdv-v2-card {
     background: rgba(20,33,30,0.7) !important;
     border-color: rgba(52,211,153,0.15) !important;
@@ -2434,7 +2402,6 @@ body.dark-mode .mesrdv-v2-sub,
 body.dark-mode .mesrdv-v2-help,
 body.dark-mode .mesrdv-v2-step-label { color: #94a3b8 !important; }
 
-/* ESPACE PATIENT V2 dark */
 body.dark-mode .esp-v2-stat,
 body.dark-mode .esp-v2-block { background: #14211e !important; border-color: rgba(52,211,153,0.15) !important; }
 body.dark-mode .esp-v2-rdv-item,
@@ -2449,7 +2416,6 @@ body.dark-mode .esp-v2-fade { background: linear-gradient(to bottom, transparent
 body.dark-mode .esp-v2-empty { background: linear-gradient(180deg, rgba(52,211,153,0.03), rgba(52,211,153,0.06)) !important; }
 body.dark-mode .esp-v2-med { background: #14211e !important; }
 
-/* CONTACT V2 dark */
 body.dark-mode .ctc-v2-form-card,
 body.dark-mode .ctc-v2-info-card,
 body.dark-mode .ctc-v2-map-card {
@@ -2460,14 +2426,12 @@ body.dark-mode .ctc-v2-form-title,
 body.dark-mode .ctc-v2-info-title,
 body.dark-mode .ctc-v2-info-value { color: #a7f3d0 !important; }
 
-/* RGPD CARDS dark */
 body.dark-mode .m-rgpd-card {
     background: #14211e !important;
     border-color: rgba(52,211,153,0.15) !important;
 }
 body.dark-mode .m-rgpd-card h5 { color: #a7f3d0 !important; }
 
-/* ===== ACCESSIBILITÉ ===== */
 #a11y-fab {
     position: fixed;
     bottom: 24px;
@@ -2615,13 +2579,11 @@ body.dark-mode .m-rgpd-card h5 { color: #a7f3d0 !important; }
 }
 .a11y-reset:hover { background: #fee2e2; }
 
-/* Taille du texte */
 html.a11y-font-large { font-size: 18px !important; }
 html.a11y-font-large body { font-size: 18px !important; }
 html.a11y-font-xlarge { font-size: 21px !important; }
 html.a11y-font-xlarge body { font-size: 21px !important; }
 
-/* Animations réduites */
 html.a11y-reduce-motion *,
 html.a11y-reduce-motion *::before,
 html.a11y-reduce-motion *::after {
@@ -2631,11 +2593,8 @@ html.a11y-reduce-motion *::after {
     scroll-behavior: auto !important;
 }
 
-/* Soulignement des liens */
 html.a11y-underline-links a { text-decoration: underline !important; }
 
-/* ===== CONTRASTE ÉLEVÉ ===== */
-/* Tout en blanc sur fond noir */
 html.a11y-high-contrast * {
     background-color: transparent !important;
     color: #fff !important;
@@ -2648,7 +2607,6 @@ html.a11y-high-contrast * {
 html.a11y-high-contrast,
 html.a11y-high-contrast body { background-color: #000 !important; }
 
-/* Liens en jaune souligné */
 html.a11y-high-contrast a,
 html.a11y-high-contrast a * {
     color: #ffff00 !important;
@@ -2657,14 +2615,12 @@ html.a11y-high-contrast a * {
 }
 html.a11y-high-contrast a:hover { color: #fff !important; -webkit-text-fill-color: #fff !important; }
 
-/* Titres italiques (gradient) en jaune */
 html.a11y-high-contrast em {
     color: #ffff00 !important;
     -webkit-text-fill-color: #ffff00 !important;
     background: none !important;
 }
 
-/* Boutons / badges : fond jaune, contenu noir */
 html.a11y-high-contrast button,
 html.a11y-high-contrast button *,
 html.a11y-high-contrast a[class*="btn"],
@@ -2716,7 +2672,6 @@ html.a11y-high-contrast .m-doctor-status-v2 {
     text-shadow: none !important;
 }
 
-/* Liens du bento : jaune souligné, pas de fond jaune */
 html.a11y-high-contrast .m-bento-link,
 html.a11y-high-contrast .m-bento-link *,
 html.a11y-high-contrast .m-bento-link-sm,
@@ -2730,7 +2685,6 @@ html.a11y-high-contrast .m-bento-link-sm * {
     text-decoration: underline !important;
 }
 
-/* Avatars / icônes colorés : fond jaune, contenu noir */
 html.a11y-high-contrast .esp-v2-avatar,
 html.a11y-high-contrast .esp-v2-avatar *,
 html.a11y-high-contrast .esp-v2-doc-badge,
@@ -2766,7 +2720,6 @@ html.a11y-high-contrast .confirm-info-icon-wrap * {
     border: 2px solid #fff !important;
 }
 
-/* Cartes / blocs : bordure blanche */
 html.a11y-high-contrast .m-bento-large,
 html.a11y-high-contrast .m-bento-small,
 html.a11y-high-contrast .m-doctor-card-v3,
@@ -2790,7 +2743,6 @@ html.a11y-high-contrast .rgpd-block {
     border: 2px solid #fff !important;
 }
 
-/* Inputs */
 html.a11y-high-contrast input,
 html.a11y-high-contrast textarea,
 html.a11y-high-contrast select {
@@ -2806,13 +2758,11 @@ html.a11y-high-contrast textarea::placeholder {
     -webkit-text-fill-color: #ccc !important;
 }
 
-/* SVG hors badges : blanc */
 html.a11y-high-contrast svg:not(button svg):not([class*="icon"] svg):not([class*="avatar"] svg):not([class*="badge"] svg) {
     fill: #fff !important;
     stroke: currentColor !important;
 }
 
-/* Bouton accessibilité reste reconnaissable */
 html.a11y-high-contrast #a11y-fab,
 html.a11y-high-contrast #a11y-fab * {
     background: #ffff00 !important;
@@ -2831,7 +2781,6 @@ html.a11y-high-contrast .a11y-toggle input:checked + .a11y-slider {
     background-color: #ffff00 !important;
 }
 
-/* ===== FIX HAUTEUR / SCROLL ===== */
 html, body {
     height: auto !important;
     min-height: 100% !important;

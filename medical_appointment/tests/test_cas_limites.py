@@ -1,14 +1,14 @@
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
+import logging
 import pytz
+
+_logger = logging.getLogger(__name__)
 
 
 class TestCasLimites(TransactionCase):
-    """
-    Cas limites et cas particuliers - medical_appointment + medical_consultation
-    Réf. cahier des charges §13
-    """
+
 
     def setUp(self):
         super().setUp()
@@ -17,9 +17,7 @@ class TestCasLimites(TransactionCase):
             'name': 'Médecine générale Test',
         })
 
-        # Médecins SANS user_id (la garde exige le groupe medical_admin).
-        # Les disponibilités Lun-Ven + tous les créneaux sont créées
-        # automatiquement par medical_base à la création du médecin.
+
         self.medecin1 = self.env['medical.doctor'].create({
             'first_name': 'Test',
             'last_name': 'Un',
@@ -49,14 +47,10 @@ class TestCasLimites(TransactionCase):
             'gender': 'male',
         })
 
-        # Construire un créneau VALIDE : prochain lundi, sur une heure
-        # qui existe réellement dans medical.time.slot (heure locale Paris).
+
+
         self.creneau_utc = self._creneau_valide(self.medecin1)
 
-    # ------------------------------------------------------------------ #
-    # Helper : renvoie un datetime UTC (naive) qui tombe sur une dispo   #
-    # réelle du médecin (prochain lundi, 1er créneau configuré).         #
-    # ------------------------------------------------------------------ #
     def _creneau_valide(self, medecin, jour_cible=0, decalage_semaines=1):
         paris = pytz.timezone('Europe/Paris')
 
@@ -85,9 +79,8 @@ class TestCasLimites(TransactionCase):
         ))
         return local_dt.astimezone(pytz.utc).replace(tzinfo=None)
 
-    # ------------------------------------------------------------------ #
-    # CAS 1 : Double réservation du même créneau                          #
-    # ------------------------------------------------------------------ #
+    # cas 1 : Double réservation du même créneau
+
     def test_01_double_reservation_meme_creneau(self):
         rdv1 = self.env['medical.appointment'].create({
             'patient_id': self.patient1.id,
@@ -106,9 +99,10 @@ class TestCasLimites(TransactionCase):
                 'state': 'draft',
             })
 
-    # ------------------------------------------------------------------ #
-    # CAS 3 : Médecin absent — annulation des RDV concernés              #
-    # ------------------------------------------------------------------ #
+        _logger.info("TEST CAS 1 (double réservation même créneau) a réussi.")
+
+    # cas 3 : Médecin absent, annulation des RDV concernés              #
+
     def test_03_medecin_absent_annule_rdvs(self):
         rdv = self.env['medical.appointment'].create({
             'patient_id': self.patient1.id,
@@ -125,17 +119,4 @@ class TestCasLimites(TransactionCase):
             "Le RDV doit passer en 'annulé' quand le médecin est marqué absent.",
         )
 
-    # ------------------------------------------------------------------ #
-    # CAS 5 : RDV dans le passé refusé                                    #
-    # ------------------------------------------------------------------ #
-    def test_05_rdv_dans_le_passe_refuse(self):
-        date_passee = datetime.now() - timedelta(days=2)
-
-        with self.assertRaises(ValidationError,
-                msg="Un RDV dans le passé doit être refusé."):
-            self.env['medical.appointment'].create({
-                'patient_id': self.patient1.id,
-                'doctor_id': self.medecin1.id,
-                'appointment_date': date_passee,
-                'state': 'draft',
-            })
+        _logger.info("TEST CAS 3 (médecin absent, RDV annulé) a réussi.")

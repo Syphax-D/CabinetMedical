@@ -424,7 +424,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mesrdv-v2-field">
-                                            <input type="date" id="birth_date" name="birth_date" class="mesrdv-v2-input" placeholder=" " required="required" t-att-max="today"/>
+                                            <input type="date" id="birth_date" name="birth_date" class="mesrdv-v2-input" placeholder=" " required="required" min="1900-01-01" t-att-max="today"/>
                                             <label for="birth_date" class="mesrdv-v2-label mesrdv-v2-label-date">Date de naissance</label>
                                         </div>
                                     </div>
@@ -1063,6 +1063,18 @@
                         <div class="mesrdv-v2-alert mesrdv-v2-alert-info" style="margin-bottom:20px;">
                             <svg viewBox="0 0 24 24" style="width:18px;fill:currentColor;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                             <span>Votre rendez-vous a bien été reporté.</span>
+                        </div>
+                    </t>
+                    <t t-if="request.params.get('cancel_success') == '1'">
+                        <div class="mesrdv-v2-alert mesrdv-v2-alert-info" style="margin-bottom:20px;">
+                            <svg viewBox="0 0 24 24" style="width:18px;fill:currentColor;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            <span>Votre rendez-vous a bien été annulé.</span>
+                        </div>
+                    </t>
+                    <t t-if="request.params.get('cancel_error') == 'delai'">
+                        <div class="mesrdv-v2-alert mesrdv-v2-alert-error" style="margin-bottom:20px;">
+                            <svg viewBox="0 0 24 24" style="width:18px;fill:currentColor;flex-shrink:0;"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.5 2 12s4.47 10 9.99 10C17.52 22 22 17.5 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+                            <span>Annulation impossible à moins de 2h du rendez-vous. Merci de contacter le cabinet.</span>
                         </div>
                     </t>
 

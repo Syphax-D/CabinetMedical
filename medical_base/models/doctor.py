@@ -48,7 +48,7 @@ class MedicalDoctor(models.Model):
             for doctor in doctors:
                 if not doctor.availability_ids:
                     avail_vals = []
-                    for day in range(5):  # 0=Lundi .. 4=Vendredi
+                    for day in range(7):  # 0=Lundi .. 6=Dimanche
                         avail_vals.append({
                             'doctor_id': doctor.id,
                             'day_of_week': str(day),

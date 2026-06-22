@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    //INJECTION DU BOUTON ET DU PANNEAU
+    //injection du boutton et du panneau
     function injectAccessibilityUI() {
         if (document.getElementById('a11y-fab')) return; // voir si ca n'existe pas deja
 
@@ -91,7 +91,7 @@
         });
     }
 
-    //==APPLICATION DES PRÉFÉRENCES==
+    //preferences
     function applySetting(name, value) {
         var html = document.documentElement;
         if (name === 'fontSize') {
@@ -136,7 +136,7 @@
         }, 50);
     }
 
-    // INITIANALISER
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             loadSettings();
